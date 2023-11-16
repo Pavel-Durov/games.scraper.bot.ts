@@ -23,22 +23,21 @@ async function parseFixtures(content: string): Promise<Fixture[]> {
   return result;
 }
 
-const url =
+const URL =
   'https://www.arsenal.com/fixtures?field_arsenal_team_target_id=All&field_competition_target_id=All&field_home_away_or_neutral_value=All&field_tv_channel_target_id=All&revision_information=';
+
+const VENUE = 'Emirates Stadium';
 export async function scrapeArsenalFixtures(chatId?: string) {
   const now = new Date();
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(URL);
     if (response.status === 200) {
-      const $ = cheerio.load(response.data);
       const fixtures = await parseFixtures(response.data);
-      const venue = 'Emirates Stadium';
-
       const update: FixturesUpdate = {
         date: now,
-        venue,
-        fixtures: fixtures.filter((f) => f.venue === venue && f.date > now)
+        venue: VENUE,
+        fixtures: fixtures.filter((f) => f.venue === VENUE && f.date > now)
       };
       const message = fixturesToRichText(update);
       logger.info(message);
@@ -49,4 +48,6 @@ export async function scrapeArsenalFixtures(chatId?: string) {
   } catch (error) {
     logger.error(`Error: ${error.message}`);
   }
+  logger.info(`Process ${process.pid} is about to exit.`);
+  process.exit(0);
 }

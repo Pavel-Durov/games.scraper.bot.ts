@@ -9,7 +9,7 @@ $ npm install
 ## Run
 
 ```shell
-$ tsx src/index.ts
+$ npm run start
 ```
 
 ## Build

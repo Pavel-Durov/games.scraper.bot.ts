@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "jest ./test",
-    "start": "source .envrc && tsx ./src/index.ts",
+    "start": "tsx ./src/index.ts",
     "lint:fix": "biome format ./src/**  ./test/** --write",
     "lint": "biome format ./src/**  ./test/**",
     "build": "tsc",

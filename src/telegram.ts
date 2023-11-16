@@ -1,11 +1,11 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { ARSENAL_GAMES_TELEGRAM_BOT_TOKEN } from './config';
+import { TELEGRAM_BOT_TOKEN } from './config';
 import { initLog } from './logger';
 import { scrapeArsenalFixtures } from './scrape';
 
 const logger = initLog('telegram');
 
-const bot = new TelegramBot(ARSENAL_GAMES_TELEGRAM_BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
 export function sendRichText(richText: string, chatId) {
   if (chatId) {

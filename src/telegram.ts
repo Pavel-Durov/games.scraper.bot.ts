@@ -7,9 +7,9 @@ const logger = initLog('telegram');
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-export function sendRichText(richText: string, chatId) {
+export async function sendRichText(richText: string, chatId) {
   if (chatId) {
-    bot.sendMessage(chatId, richText, { parse_mode: 'Markdown' });
+    await bot.sendMessage(chatId, richText, { parse_mode: 'Markdown' });
     logger.info(`[${chatId}] Message sent`);
   } else {
     logger.error('No chatId!');

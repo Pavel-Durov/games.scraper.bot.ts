@@ -5,6 +5,9 @@
 ```shell
 $ npm install
 ```
+## Env
+
+Make sure to set up `TELEGRAM_BOT_TOKEN` in the runtime environment, or via the `.envrc` file.
 
 ## Run
 

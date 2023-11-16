@@ -7,7 +7,7 @@ $ npm install
 ```
 ## Env
 
-Make sure to set up `TELEGRAM_BOT_TOKEN` in the runtime environment, or via the `.envrc` file.
+Make sure to set up `ARSENAL_GAMES_TELEGRAM_BOT_TOKEN` in the runtime environment, or via the `.envrc` file.
 
 ## Run
 

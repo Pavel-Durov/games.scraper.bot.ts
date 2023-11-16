@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "jest ./test",
-    "start": "tsx ./src/index.ts",
+    "start": "source .envrc && tsx ./src/index.ts",
     "lint:fix": "biome format ./src/**  ./test/** --write",
     "lint": "biome format ./src/**  ./test/**",
     "build": "tsc",
@@ -19,7 +19,9 @@
     "cheerio": "^1.0.0-rc.12",
     "date-fns": "^2.30.0",
     "jest": "^29.7.0",
-    "ts-jest": "^29.1.1"
+    "node-telegram-bot-api": "^0.63.0",
+    "ts-jest": "^29.1.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.1.2",

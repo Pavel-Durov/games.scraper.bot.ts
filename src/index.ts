@@ -1,8 +1,13 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-import { Fixture } from './domain';
-import { parseDate } from './date';
+import { Fixture, FixturesUpdate } from './domain';
+import { formatDate, parseDate } from './date';
+import { fixturesToRichText } from './format';
+import { sendRichText } from './telegram';
+import { initLog } from './logger';
+
+const logger = initLog('main');
 
 async function parseFixtures(content: string): Promise<Fixture[]> {
   const result: Fixture[] = [];
@@ -26,15 +31,21 @@ async function scrapeArsenalFixtures(url: string) {
     if (response.status === 200) {
       const $ = cheerio.load(response.data);
       const fixtures = await parseFixtures(response.data);
-      const filtered = fixtures.filter((f) => f.venue === 'Emirates Stadium' && f.date > now);
-      for (const fixture of filtered) {
-        console.log(fixture);
-      }
+      const venue = 'Emirates Stadium';
+
+      const update: FixturesUpdate = {
+        date: now,
+        venue,
+        fixtures: fixtures.filter((f) => f.venue === venue && f.date > now)
+      };
+      const message = fixturesToRichText(update);
+      logger.info(message);
+      await sendRichText(message);
     } else {
-      console.log(`Error: Unable to fetch the page. Status Code: ${response.status}`);
+      logger.error(`Error: Unable to fetch the page. Status Code: ${response.status}`);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    logger.error(`Error: ${error.message}`);
   }
 }
 

@@ -23,6 +23,6 @@ describe('Fixtures format', () => {
           }
         ]
       })
-    ).toBe('*Games at Emirates Stadium for this year*\n\n*Fri Jan 1 - 00:00* - Premier League_\n');
+    ).toBe('*Games at Emirates Stadium for this year*\n\n*Fri Jan 1 - 00:00* - _Premier League_\n');
   });
 });

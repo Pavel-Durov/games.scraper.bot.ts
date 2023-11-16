@@ -17,4 +17,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Run app
+        env:
+          ARSENAL_GAMES_TELEGRAM_BOT_TOKEN: ${{ secrets.ARSENAL_GAMES_TELEGRAM_BOT_TOKEN }}
+          ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID: ${{ secrets.ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
         run: npm run start

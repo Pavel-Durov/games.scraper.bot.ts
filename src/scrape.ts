@@ -4,22 +4,43 @@ import * as cheerio from 'cheerio';
 import { Fixture, FixturesUpdate } from './domain';
 import { parseDate } from './date';
 import { fixturesToRichText } from './format';
-import { sendRichText } from './telegram';
 import { initLog } from './logger';
+import { sendRichText } from './telegram';
 
 const logger = initLog('main');
 
 async function parseFixtures(content: string): Promise<Fixture[]> {
   const result: Fixture[] = [];
   const $ = cheerio.load(content);
-  const fixtures = $('.card__header');
-  for (const element of fixtures) {
-    const event = $(element).find('.event-info');
-    const date = $(element).find('.event-info__date').text().trim();
-    const venue = $(event).find('.event-info__venue').text().trim();
-    const extra = $(event).find('.event-info__extra').text().trim();
-    result.push({ date: parseDate(date), venue, leage: extra });
+
+  const cards = $('.fixture-card');
+  for (const card of cards) {
+    const headers = $(card).find('.card__header');
+    let fixture = undefined;
+
+    for (const header of headers) {
+      const date = $(header).find('.event-info__date').text().trim();
+      const venue = $(header).find('.event-info__venue').text().trim();
+      const extra = $(header).find('.event-info__extra').text().trim();
+
+      fixture = { date: parseDate(date), venue, leage: extra };
+    }
+    const contents = $(card).find('.team-crest__name-value');
+
+    if (contents.length > 0) {
+      fixture.homeTeam = $(contents[0])
+        .text()
+        .trim();
+    }
+    if (contents.length > 1) {
+      fixture.awayTeam = $(contents[1])
+        .text()
+        .trim();
+    }
+
+    result.push(fixture);
   }
+
   return result;
 }
 
@@ -29,7 +50,6 @@ const URL =
 const VENUE = 'Emirates Stadium';
 export async function scrapeArsenalFixtures(chatId?: string) {
   const now = new Date();
-
   try {
     const response = await axios.get(URL);
     if (response.status === 200) {
@@ -37,7 +57,8 @@ export async function scrapeArsenalFixtures(chatId?: string) {
       const update: FixturesUpdate = {
         date: now,
         venue: VENUE,
-        fixtures: fixtures.filter((f) => f.venue === VENUE && f.date > now)
+        fixtures: fixtures.filter((f) => f.venue === VENUE && f.date > now),
+        source: URL
       };
       const message = fixturesToRichText(update);
       logger.info(message);

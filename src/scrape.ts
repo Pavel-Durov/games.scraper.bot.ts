@@ -60,7 +60,7 @@ export async function scrapeArsenalFixtures(chatId?: string) {
         fixtures: fixtures.filter((f) => f.venue === VENUE && f.date > now),
         source: URL
       };
-      const message = fixturesToRichText(update);
+      const message = fixturesToRichText(update, now);
       logger.info(message);
       await sendRichText(message, chatId);
     } else {

@@ -11,8 +11,7 @@ export function formatDate(date: Date): string {
 export function formatDateWithYear(date: Date): string {
   return format(date, 'EEE MMM d - HH:mm (yyyy)');
 }
-export function isToday(date: Date): boolean {
-  const today = new Date();
+export function isToday(date: Date, today: Date): boolean {
   return (
     date.getDate() === today.getDate() &&
     date.getMonth() === today.getMonth() &&

@@ -3,6 +3,7 @@ name: CronJob
 on: 
   schedule: 
     - cron: "0 7 * * *" # every day at 7am
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
 
 jobs:
   scrape-job:
@@ -29,5 +30,4 @@ jobs:
           ARSENAL_GAMES_TELEGRAM_BOT_TOKEN: ${{ secrets.ARSENAL_GAMES_TELEGRAM_BOT_TOKEN }}
           ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID: ${{ secrets.ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-        run: |
-          uv run python src/main.py
+        run: uv run python src/main.py

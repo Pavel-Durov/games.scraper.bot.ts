@@ -10,15 +10,26 @@ jobs:
     environment:
       name: production-telegram-bot
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
         with:
-          node-version: "18"
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
       - name: Install Dependencies
-        run: npm install
+        run: |
+          uv venv
+          uv pip install -e .
+
       - name: Run app
         env:
           ARSENAL_GAMES_TELEGRAM_BOT_TOKEN: ${{ secrets.ARSENAL_GAMES_TELEGRAM_BOT_TOKEN }}
           ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID: ${{ secrets.ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-        run: npm run start
+        run: |
+          source .venv/bin/activate
+          python src/main.py

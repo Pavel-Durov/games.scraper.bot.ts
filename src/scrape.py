@@ -1,7 +1,8 @@
 """Web scraping module for Arsenal fixtures."""
 
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+from http import HTTPStatus
 
 import requests
 from bs4 import BeautifulSoup
@@ -53,7 +54,7 @@ def parse_fixtures(content: str) -> list[Fixture]:
             extra_text = extra_elem.get_text(strip=True) if extra_elem else ""
 
             fixture = {
-                "date": parse_date(date_text) if date_text else datetime.now(),
+                "date": parse_date(date_text) if date_text else datetime.now(UTC),
                 "venue": venue_text,
                 "league": extra_text,
                 "home_team": None,
@@ -63,7 +64,7 @@ def parse_fixtures(content: str) -> list[Fixture]:
         # If no headers found, create a default fixture
         if fixture is None:
             fixture = {
-                "date": datetime.now(),
+                "date": datetime.now(UTC),
                 "venue": "",
                 "league": "",
                 "home_team": None,
@@ -96,17 +97,21 @@ async def scrape_arsenal_fixtures(chat_id: str | None = None):
 
     Args:
         chat_id: Optional Telegram chat ID to send message to
+
+    Note:
+        Uses synchronous requests in an async function due to httpx SSL/TLS issues.
+        This is acceptable for this use case as the function is short-lived.
     """
-    now = datetime.now()
+    now = datetime.now(UTC)
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        logger.info(f"Fetching fixtures from {URL}")
+        logger.info("Fetching fixtures from %s", URL)
         response = requests.get(URL, headers=headers, timeout=30.0)
 
-        if response.status_code == 200:
+        if response.status_code == HTTPStatus.OK:
             fixtures = parse_fixtures(response.text)
             update = FixturesUpdate(
                 date=now,
@@ -118,16 +123,18 @@ async def scrape_arsenal_fixtures(chat_id: str | None = None):
             logger.info(message)
             await send_rich_text(message, chat_id)
         else:
-            logger.error(f"Error: Unable to fetch the page. Status Code: {response.status_code}")
+            logger.error("Unable to fetch the page. Status Code: %s", response.status_code)
     except requests.exceptions.ConnectionError as error:
         logger.error(
-            f"Network connection error: Unable to connect to {URL}. "
-            f"Check your internet connection or the website may be down. Error: {error}"
+            "Network connection error: Unable to connect to %s. "
+            "Check your internet connection or the website may be down. Error: %s",
+            URL,
+            error,
         )
     except requests.exceptions.Timeout as error:
-        logger.error(f"Request timed out while fetching {URL}. Error: {error}")
+        logger.error("Request timed out while fetching %s. Error: %s", URL, error)
     except Exception as error:
-        logger.error(f"Unexpected error: {error}", exc_info=True)
+        logger.exception("Unexpected error: %s", error)
 
     logger.info("Process is about to exit.")
     sys.exit(0)

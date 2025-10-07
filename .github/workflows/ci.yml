@@ -26,8 +26,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv venv
-          uv pip install -e ".[dev]"
+          uv sync --extra dev
 
       - name: Run linter
         run: |
@@ -59,17 +58,14 @@ jobs:
         run: uv python install 3.11
 
       - name: Install dependencies
-        run: |
-          uv venv
-          uv pip install -e ".[dev]"
+        run:
+          uv sync
 
       - name: Check formatting
         run: |
-          source .venv/bin/activate
-          ruff format --check src tests
+          uv run ruff format --check src tests
 
       - name: Lint
         run: |
-          source .venv/bin/activate
-          ruff check src tests
+          uv run ruff check src tests
 

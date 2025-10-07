@@ -18,20 +18,17 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          uv venv
-          uv pip install -e ".[dev]"
+          uv sync --extra dev
 
       - name: Run linter
         run: |
-          source .venv/bin/activate
-          ruff check src tests
+          uv run ruff check src tests
 
       - name: Check formatting
         run: |
           source .venv/bin/activate
-          ruff format --check src tests
+          uv run ruff format --check src tests
 
       - name: Run tests
         run: |
-          source .venv/bin/activate
-          pytest tests/ -v --cov=src --cov-report=term-missing
+          uv run pytest tests/ -v --cov=src --cov-report=term-missing

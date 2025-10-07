@@ -1,6 +1,6 @@
 """Date parsing and formatting utilities."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from dateutil import parser
 
@@ -12,15 +12,22 @@ def parse_date(date_string: str) -> datetime:
         date_string: Date string to parse
 
     Returns:
-        Parsed datetime object
+        Parsed datetime object with UTC timezone
+
+    Note:
+        Source website doesn't provide timezone info, so we assume UTC for consistency.
+        This allows comparison with datetime.now(UTC).
     """
     try:
         # Try to parse with dateutil which is more flexible
-        return parser.parse(date_string, fuzzy=True)
+        parsed = parser.parse(date_string, fuzzy=True)
+        # Make timezone-aware by assuming UTC
+        return parsed.replace(tzinfo=UTC)
     except (ValueError, parser.ParserError):
         # Fallback to current year if parsing fails
-        now = datetime.now()
-        return datetime.strptime(f"{date_string} {now.year}", "%a %b %d - %H:%M %Y")
+        now = datetime.now(UTC)
+        parsed = datetime.strptime(f"{date_string} {now.year}", "%a %b %d - %H:%M %Y")
+        return parsed.replace(tzinfo=UTC)
 
 
 def format_date(date: datetime) -> str:

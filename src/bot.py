@@ -1,6 +1,7 @@
 """Telegram bot module."""
 
 from telegram import Update
+from telegram.error import TelegramError
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 from config import TELEGRAM_BOT_TOKEN
@@ -31,21 +32,23 @@ async def send_rich_text(rich_text: str, chat_id: str | None, bot_token: str | N
         app = Application.builder().token(token).build()
         await app.initialize()
         await app.bot.send_message(chat_id=chat_id, text=rich_text, parse_mode="Markdown")
-        logger.info(f"[{chat_id}] Message sent")
+        logger.info("[%s] Message sent", chat_id)
         await app.shutdown()
+    except TelegramError as e:
+        logger.error("Telegram error sending message: %s", e)
     except Exception as e:
-        logger.error(f"Error sending message: {e}")
+        logger.exception("Unexpected error sending message: %s", e)
 
 
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):  # noqa: ARG001
     """Handle /start command.
 
     Args:
         update: Telegram update object
-        context: Telegram context object
+        context: Telegram context object (unused but required by handler signature)
     """
     chat_id = str(update.effective_chat.id)
-    logger.info(f"[{chat_id}] Got start command!")
+    logger.info("[%s] Got start command!", chat_id)
 
     # Import here to avoid circular imports
     from scrape import scrape_arsenal_fixtures

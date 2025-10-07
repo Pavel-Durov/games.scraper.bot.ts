@@ -1,0 +1,6 @@
+# Copy this file to .envrc and fill in your values
+# If using direnv, run: direnv allow
+
+export ARSENAL_GAMES_TELEGRAM_BOT_TOKEN="your_bot_token_here"
+export ARSENAL_GAMES_TELEGRAM_BOT_CHAT_ID="your_chat_id_here"
+
